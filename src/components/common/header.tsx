@@ -31,10 +31,12 @@ export const Header = () => {
               <MenuIcon />
             </Button>
           </SheetTrigger>
+
           <SheetContent>
             <SheetHeader>
               <SheetTitle>Menu</SheetTitle>
             </SheetHeader>
+
             <div className="px-5">
               {session?.user ? (
                 <>
