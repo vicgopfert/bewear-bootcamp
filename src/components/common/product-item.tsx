@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { productTable, productVariantTable } from "@/db/schema";
+import { formatImageUrl } from "@/helpers/imageFormatted";
 import { formatCentsToBRL } from "@/helpers/money";
 import { cn } from "@/lib/utils";
 
@@ -15,12 +16,10 @@ interface ProductItemProps {
 const ProductItem = ({ product, textContainerClassName }: ProductItemProps) => {
   const firstVariant = product.variants[0];
 
-  const imageUrl = firstVariant?.imageUrl
-    ? (firstVariant.imageUrl.match(/https?:\/\/[^"]+/)?.[0] ?? null)
-    : null;
+  const imageUrl = formatImageUrl(firstVariant?.imageUrl);
 
   return (
-    <Link href="/">
+    <Link href={`/product-variant/${firstVariant.slug}`}>
       {imageUrl && (
         <Image
           src={imageUrl}
