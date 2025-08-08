@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/sheet";
 import { authClient } from "@/lib/auth-client";
 
+import { Cart } from "./cart";
+
 export const Header = () => {
   const { data: session } = authClient.useSession();
 
@@ -24,7 +26,9 @@ export const Header = () => {
         <Image src="/logo.svg" alt="BEWEAR" width={100} height={26.14} />
       </Link>
 
-      <div className="flex items-center">
+      <div className="flex items-center gap-3">
+        <Cart />
+
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon">
