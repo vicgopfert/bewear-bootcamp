@@ -7,8 +7,6 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { Quantico } from "next/font/google";
-import { file } from "zod";
 
 export const userTable = pgTable("user", {
   id: text("id").primaryKey(),
