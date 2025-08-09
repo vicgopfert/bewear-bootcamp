@@ -5,6 +5,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { PatternFormat } from "react-number-format";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -25,6 +27,7 @@ import { useUpdateCartShippingAddress } from "@/hooks/mutations/use-update-cart-
 import { shippingAddressTable } from "@/db/schema";
 import { useCart } from "@/hooks/queries/use-cart";
 import { getCart } from "@/actions/get-cart";
+import { formatAddress } from "@/app/cart/helpers/address";
 
 const schema = z.object({
   email: z.string().email("E-mail inválido"),
@@ -54,6 +57,7 @@ const Addressess = ({
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>(
     defaultShippingAddressId || undefined,
   );
+  const router = useRouter();
   const createAddressMutation = useCreateAddress();
   const updateCartShippingAddressMutation = useUpdateCartShippingAddress();
   const { data: addresses, isLoading } = useAddresses({
@@ -78,12 +82,40 @@ const Addressess = ({
   });
 
   const onSubmit = async (values: FormValues) => {
-    const newAddress = await createAddressMutation.mutateAsync(values);
-    await updateCartShippingAddressMutation.mutateAsync({
-      shippingAddressId: newAddress.id,
-    });
-    setSelectedAddress(newAddress.id);
-    form.reset();
+    try {
+      const newAddress = await createAddressMutation.mutateAsync(values);
+      await updateCartShippingAddressMutation.mutateAsync({
+        shippingAddressId: newAddress.id,
+      });
+      setSelectedAddress(newAddress.id);
+      form.reset();
+      toast.success("Endereço salvo com sucesso");
+    } catch (error: any) {
+      toast.error(
+        error?.message ||
+          "Não foi possível salvar o endereço. Tente novamente.",
+      );
+    }
+  };
+
+  const handleGoToPayment = async () => {
+    try {
+      if (!selectedAddress || selectedAddress === "add_new") {
+        toast.error("Selecione um endereço de entrega.");
+        return;
+      }
+      if (selectedAddress !== defaultShippingAddressId) {
+        await updateCartShippingAddressMutation.mutateAsync({
+          shippingAddressId: selectedAddress,
+        });
+      }
+      router.push("/cart/confirmation");
+    } catch (error: any) {
+      toast.error(
+        error?.message ||
+          "Não foi possível avançar para o pagamento. Tente novamente.",
+      );
+    }
   };
 
   return (
@@ -109,9 +141,7 @@ const Addressess = ({
                     htmlFor={`address_${address.id}`}
                     className="cursor-pointer text-sm"
                   >
-                    {address.recipientName}, {address.street}, {address.number}
-                    {address.complement ? `, ${address.complement}` : ""},{" "}
-                    {address.neighborhood}, {address.city} - {address.state}
+                    {formatAddress(address)}
                   </Label>
                 </div>
               </CardContent>
@@ -134,14 +164,12 @@ const Addressess = ({
           <div className="mt-6">
             <Button
               className="w-full md:w-auto"
-              onClick={() =>
-                updateCartShippingAddressMutation.mutate({
-                  shippingAddressId: selectedAddress,
-                })
-              }
+              onClick={handleGoToPayment}
               disabled={updateCartShippingAddressMutation.isPending}
             >
-              Ir para pagamento
+              {updateCartShippingAddressMutation.isPending
+                ? "Processando..."
+                : "Ir para pagamento"}
             </Button>
           </div>
         )}
