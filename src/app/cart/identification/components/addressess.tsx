@@ -20,14 +20,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCreateAddress } from "@/hooks/mutations/use-create-address";
+import { useAddresses } from "@/hooks/queries/use-addresses";
 
 const schema = z.object({
   email: z.string().email("E-mail inválido"),
   fullName: z.string().min(1, "Obrigatório"),
-  cpf: z
-    .string()
-    .min(11, "CPF inválido")
-    .max(11, "CPF inválido"),
+  cpf: z.string().min(11, "CPF inválido").max(11, "CPF inválido"),
   cellphone: z.string().min(1, "Obrigatório"),
   zipCode: z.string().min(1, "Obrigatório"),
   address: z.string().min(1, "Obrigatório"),
@@ -41,8 +39,11 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 const Addressess = () => {
-  const [selectedAddress, setSelectedAddress] = useState<string | undefined>(undefined);
+  const [selectedAddress, setSelectedAddress] = useState<string | undefined>(
+    undefined,
+  );
   const createAddressMutation = useCreateAddress();
+  const { data: addresses, isLoading } = useAddresses();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -73,12 +74,38 @@ const Addressess = () => {
       </CardHeader>
 
       <CardContent>
-        <RadioGroup value={selectedAddress} onValueChange={(value) => setSelectedAddress(value)}>
+        <RadioGroup
+          value={selectedAddress}
+          onValueChange={(value) => setSelectedAddress(value)}
+        >
+          {(addresses ?? []).map((address) => (
+            <Card key={address.id}>
+              <CardContent>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value={address.id}
+                    id={`address_${address.id}`}
+                  />
+                  <Label
+                    htmlFor={`address_${address.id}`}
+                    className="cursor-pointer text-sm"
+                  >
+                    {address.recipientName}, {address.street}, {address.number}
+                    {address.complement ? `, ${address.complement}` : ""},{" "}
+                    {address.neighborhood}, {address.city} - {address.state}
+                  </Label>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+
           <Card>
             <CardContent>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="add_new" id="add_new" />
-                <Label htmlFor="add_new">Adicionar novo endereço</Label>
+                <Label htmlFor="add_new" className="cursor-pointer">
+                  Adicionar novo endereço
+                </Label>
               </div>
             </CardContent>
           </Card>
@@ -97,7 +124,11 @@ const Addressess = () => {
                   <FormItem className="md:col-span-2">
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="seu@email.com" {...field} />
+                      <Input
+                        type="email"
+                        placeholder="seu@email.com"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -278,7 +309,10 @@ const Addressess = () => {
                 <Button
                   type="submit"
                   className="w-full md:w-auto"
-                  disabled={form.formState.isSubmitting || createAddressMutation.isPending}
+                  disabled={
+                    form.formState.isSubmitting ||
+                    createAddressMutation.isPending
+                  }
                 >
                   Salvar endereço
                 </Button>
