@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -21,7 +21,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCreateAddress } from "@/hooks/mutations/use-create-address";
 import { useAddresses } from "@/hooks/queries/use-addresses";
+import { useUpdateCartShippingAddress } from "@/hooks/mutations/use-update-cart-shipping-address";
 import { shippingAddressTable } from "@/db/schema";
+import { useCart } from "@/hooks/queries/use-cart";
+import { getCart } from "@/actions/get-cart";
 
 const schema = z.object({
   email: z.string().email("E-mail inválido"),
@@ -41,13 +44,18 @@ type FormValues = z.infer<typeof schema>;
 
 interface AddressessProps {
   shippingAddress: (typeof shippingAddressTable.$inferSelect)[];
+  defaultShippingAddressId?: string;
 }
 
-const Addressess = ({ shippingAddress }: AddressessProps) => {
+const Addressess = ({
+  shippingAddress,
+  defaultShippingAddressId,
+}: AddressessProps) => {
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>(
-    undefined,
+    defaultShippingAddressId || undefined,
   );
   const createAddressMutation = useCreateAddress();
+  const updateCartShippingAddressMutation = useUpdateCartShippingAddress();
   const { data: addresses, isLoading } = useAddresses({
     initialData: shippingAddress,
   });
@@ -70,14 +78,18 @@ const Addressess = ({ shippingAddress }: AddressessProps) => {
   });
 
   const onSubmit = async (values: FormValues) => {
-    await createAddressMutation.mutateAsync(values);
+    const newAddress = await createAddressMutation.mutateAsync(values);
+    await updateCartShippingAddressMutation.mutateAsync({
+      shippingAddressId: newAddress.id,
+    });
+    setSelectedAddress(newAddress.id);
     form.reset();
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Identificação</CardTitle>
+        <CardTitle>Escolha um endereço de entrega</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -117,6 +129,22 @@ const Addressess = ({ shippingAddress }: AddressessProps) => {
             </CardContent>
           </Card>
         </RadioGroup>
+
+        {selectedAddress && selectedAddress !== "add_new" && (
+          <div className="mt-6">
+            <Button
+              className="w-full md:w-auto"
+              onClick={() =>
+                updateCartShippingAddressMutation.mutate({
+                  shippingAddressId: selectedAddress,
+                })
+              }
+              disabled={updateCartShippingAddressMutation.isPending}
+            >
+              Ir para pagamento
+            </Button>
+          </div>
+        )}
 
         {selectedAddress === "add_new" && (
           <Form {...form}>

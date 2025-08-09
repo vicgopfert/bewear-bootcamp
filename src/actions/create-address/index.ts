@@ -7,6 +7,7 @@ import { shippingAddressTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import { CreateAddressSchema, createAddressSchema } from "./schema";
+import { revalidatePath } from "next/cache";
 
 export const createAddress = async (data: CreateAddressSchema) => {
   createAddressSchema.parse(data);
@@ -38,6 +39,7 @@ export const createAddress = async (data: CreateAddressSchema) => {
     })
     .returning();
 
+  revalidatePath("/cart/identification");
+
   return inserted;
 };
-
