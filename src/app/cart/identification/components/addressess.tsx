@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useCreateAddress } from "@/hooks/mutations/use-create-address";
 
 const schema = z.object({
   email: z.string().email("E-mail inválido"),
@@ -41,6 +42,7 @@ type FormValues = z.infer<typeof schema>;
 
 const Addressess = () => {
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>(undefined);
+  const createAddressMutation = useCreateAddress();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -59,8 +61,9 @@ const Addressess = () => {
     },
   });
 
-  const onSubmit = (values: FormValues) => {
-    return values;
+  const onSubmit = async (values: FormValues) => {
+    await createAddressMutation.mutateAsync(values);
+    form.reset();
   };
 
   return (
@@ -272,7 +275,11 @@ const Addressess = () => {
               />
 
               <div className="md:col-span-2">
-                <Button type="submit" className="w-full md:w-auto">
+                <Button
+                  type="submit"
+                  className="w-full md:w-auto"
+                  disabled={form.formState.isSubmitting || createAddressMutation.isPending}
+                >
                   Salvar endereço
                 </Button>
               </div>
