@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCreateAddress } from "@/hooks/mutations/use-create-address";
 import { useAddresses } from "@/hooks/queries/use-addresses";
+import { shippingAddressTable } from "@/db/schema";
 
 const schema = z.object({
   email: z.string().email("E-mail inválido"),
@@ -38,12 +39,18 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-const Addressess = () => {
+interface AddressessProps {
+  shippingAddress: (typeof shippingAddressTable.$inferSelect)[];
+}
+
+const Addressess = ({ shippingAddress }: AddressessProps) => {
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>(
     undefined,
   );
   const createAddressMutation = useCreateAddress();
-  const { data: addresses, isLoading } = useAddresses();
+  const { data: addresses, isLoading } = useAddresses({
+    initialData: shippingAddress,
+  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
