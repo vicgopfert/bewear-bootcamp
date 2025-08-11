@@ -1,5 +1,7 @@
 "use client";
 
+import { loadStripe } from "@stripe/stripe-js";
+import { createCheckoutSession } from "@/actions/create-checkout-session";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,10 +21,30 @@ import { useState } from "react";
 const FinishOrderButton = () => {
   const [successDialogIsOpen, setSuccessDialogisOpen] = useState(false);
   const finishOrderMutation = useFinishOrder();
-  const handleFinishOrder = () => {
-    finishOrderMutation.mutate(undefined, {
-      onSuccess: () => setSuccessDialogisOpen(true),
+
+  const handleFinishOrder = async () => {
+    const { orderId } = await finishOrderMutation.mutateAsync();
+    if (!orderId) {
+      throw new Error("Failed to create order");
+    }
+
+    const checkoutSession = await createCheckoutSession({ orderId });
+
+    const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+    if (!publishableKey) {
+      throw new Error("Stripe publishable key is not configured");
+    }
+
+    const stripe = await loadStripe(publishableKey);
+    if (!stripe) {
+      throw new Error("Failed to load Stripe");
+    }
+
+    await stripe.redirectToCheckout({
+      sessionId: checkoutSession.id,
     });
+
+    setSuccessDialogisOpen(true);
   };
 
   return (
