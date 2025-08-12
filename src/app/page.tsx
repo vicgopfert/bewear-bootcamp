@@ -1,30 +1,23 @@
-import { desc } from "drizzle-orm";
 import Image from "next/image";
 
 import BrandList from "@/components/common/brand-list";
 import CategorySelector from "@/components/common/category-selector";
 import Footer from "@/components/common/footer";
 import ProductList from "@/components/common/product-list";
-import { db } from "@/db";
-import { productTable } from "@/db/schema";
 
 import { Header } from "../components/common/header";
+import {
+  getNewlyCreatedProducts,
+  getProductsWithVariants,
+} from "@/data/products/get-product";
+import { getCategories } from "@/data/categories/get-category";
 
 const Home = async () => {
-  const products = await db.query.productTable.findMany({
-    with: {
-      variants: true,
-    },
-  });
-
-  const categories = await db.query.categoryTable.findMany({});
-
-  const newlyCreatedProducts = await db.query.productTable.findMany({
-    orderBy: [desc(productTable.createdAt)],
-    with: {
-      variants: true,
-    },
-  });
+  const [products, newlyCreatedProducts, categories] = await Promise.all([
+    getProductsWithVariants(),
+    getNewlyCreatedProducts(),
+    getCategories(),
+  ]);
 
   return (
     <div>
