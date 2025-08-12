@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { PatternFormat } from "react-number-format";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { z } from "zod";
 
+import { formatAddress } from "@/app/cart/helpers/address";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Form,
   FormControl,
@@ -20,14 +20,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useCreateAddress } from "@/hooks/mutations/use-create-address";
-import { useAddresses } from "@/hooks/queries/use-addresses";
-import { useUpdateCartShippingAddress } from "@/hooks/mutations/use-update-cart-shipping-address";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { shippingAddressTable } from "@/db/schema";
-import { useCart } from "@/hooks/queries/use-cart";
-import { getCart } from "@/actions/get-cart";
-import { formatAddress } from "@/app/cart/helpers/address";
+import { useCreateAddress } from "@/hooks/mutations/use-create-address";
+import { useUpdateCartShippingAddress } from "@/hooks/mutations/use-update-cart-shipping-address";
+import { useAddresses } from "@/hooks/queries/use-addresses";
 
 const schema = z.object({
   email: z.string().email("E-mail inválido"),
@@ -60,7 +58,7 @@ const Addressess = ({
   const router = useRouter();
   const createAddressMutation = useCreateAddress();
   const updateCartShippingAddressMutation = useUpdateCartShippingAddress();
-  const { data: addresses, isLoading } = useAddresses({
+  const { data: addresses } = useAddresses({
     initialData: shippingAddress,
   });
 
@@ -90,10 +88,10 @@ const Addressess = ({
       setSelectedAddress(newAddress.id);
       form.reset();
       toast.success("Endereço salvo com sucesso");
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : null;
       toast.error(
-        error?.message ||
-          "Não foi possível salvar o endereço. Tente novamente.",
+        message || "Não foi possível salvar o endereço. Tente novamente.",
       );
     }
   };
@@ -110,9 +108,10 @@ const Addressess = ({
         });
       }
       router.push("/cart/confirmation");
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : null;
       toast.error(
-        error?.message ||
+        message ||
           "Não foi possível avançar para o pagamento. Tente novamente.",
       );
     }

@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import {
   Accordion,
   AccordionContent,
@@ -12,7 +14,6 @@ import { Separator } from "@/components/ui/separator";
 import { orderTable } from "@/db/schema";
 import { formatImageUrl } from "@/helpers/imageFormatted";
 import { formatCentsToBRL } from "@/helpers/money";
-import Image from "next/image";
 
 interface OrdersProps {
   orders: Array<{

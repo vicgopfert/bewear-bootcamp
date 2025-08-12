@@ -1,8 +1,9 @@
+import Image from "next/image";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatImageUrl } from "@/helpers/imageFormatted";
 import { formatCentsToBRL } from "@/helpers/money";
-import Image from "next/image";
 
 interface CartSummaryProps {
   subtotalInCents: number;

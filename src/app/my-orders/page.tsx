@@ -1,12 +1,14 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
+import { Header } from "@/components/common/header";
 import { db } from "@/db";
 import { orderTable } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { Header } from "@/components/common/header";
-import Orders from "./components/orders";
 import { formatImageUrl } from "@/helpers/imageFormatted";
+import { auth } from "@/lib/auth";
+
+import Orders from "./components/orders";
 
 const MyOrdersPage = async () => {
   const session = await auth.api.getSession({
