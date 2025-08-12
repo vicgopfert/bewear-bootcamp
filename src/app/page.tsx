@@ -3,14 +3,13 @@ import Image from "next/image";
 import BrandList from "@/components/common/brand-list";
 import CategorySelector from "@/components/common/category-selector";
 import Footer from "@/components/common/footer";
+import { Header } from "@/components/common/header";
 import ProductList from "@/components/common/product-list";
-
-import { Header } from "../components/common/header";
+import { getCategories } from "@/data/categories/get-category";
 import {
   getNewlyCreatedProducts,
   getProductsWithVariants,
 } from "@/data/products/get-product";
-import { getCategories } from "@/data/categories/get-category";
 
 const Home = async () => {
   const [products, newlyCreatedProducts, categories] = await Promise.all([
