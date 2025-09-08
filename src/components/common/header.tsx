@@ -1,6 +1,6 @@
 "use client";
 
-import { LogInIcon, LogOutIcon, MenuIcon } from "lucide-react";
+import { LogInIcon, LogOutIcon, MenuIcon, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -21,12 +21,36 @@ export const Header = () => {
   const { data: session } = authClient.useSession();
 
   return (
-    <header className="flex items-center justify-between p-5">
-      <Link href="/">
+    <header className="relative flex items-center justify-between p-5">
+      <div className="hidden lg:block">
+        {session?.user ? (
+          <>
+            <div className="flex justify-between">
+              <div className="flex items-center gap-3">
+                <User />
+
+                <div>
+                  <h2 className="font-semibold">Olá, {session.user?.name}!</h2>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center justify-between space-x-2">
+            <Button size="icon" asChild variant="outline">
+              <Link href="/authentication">
+                <LogInIcon />
+              </Link>
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <Link href="/" className="lg:absolute lg:left-1/2 lg:-translate-x-1/2">
         <Image src="/logo.svg" alt="BEWEAR" width={100} height={26.14} />
       </Link>
 
-      <div className="flex items-center gap-3">
+      <div className="ml-auto flex items-center gap-3">
         <Cart />
 
         <Sheet>
