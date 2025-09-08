@@ -1,18 +1,29 @@
+import Image from "next/image";
+import Link from "next/link";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Header } from "../../components/common/header";
 import SignInForm from "./components/sign-in-form";
 import SignUpForm from "./components/sign-up-form";
 
 const Authentication = async () => {
   return (
-    <>
-      <Header />
-      <div className="flex w-full flex-col gap-6 p-5">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-10 p-5">
+      {/* Logo */}
+      <Link href="/">
+        <Image src="/logo.svg" alt="BEWEAR" width={200} height={52.28} />
+      </Link>
+
+      {/* Tabs */}
+      <div className="w-full max-w-md">
         <Tabs defaultValue="sign-in">
-          <TabsList>
-            <TabsTrigger value="sign-in">Entrar</TabsTrigger>
-            <TabsTrigger value="sign-up">Criar conta</TabsTrigger>
+          <TabsList className="w-full">
+            <TabsTrigger value="sign-in" className="w-1/2">
+              Entrar
+            </TabsTrigger>
+            <TabsTrigger value="sign-up" className="w-1/2">
+              Criar conta
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="sign-in" className="w-full">
@@ -24,7 +35,7 @@ const Authentication = async () => {
           </TabsContent>
         </Tabs>
       </div>
-    </>
+    </div>
   );
 };
 
