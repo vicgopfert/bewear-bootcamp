@@ -21,7 +21,7 @@ export const Header = () => {
   const { data: session } = authClient.useSession();
 
   return (
-    <header className="relative flex items-center justify-between p-5">
+    <header className="relative flex items-center justify-between p-5 lg:px-72">
       <div className="hidden lg:block">
         {session?.user ? (
           <>

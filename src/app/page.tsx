@@ -41,7 +41,7 @@ const Home = async () => {
             width={0}
             height={0}
             sizes="100vw"
-            className="mx-auto hidden h-auto w-full max-w-[1150px] lg:block"
+            className="mx-auto hidden h-auto w-full max-w-[1300px] lg:block"
           />
         </div>
 
