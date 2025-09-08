@@ -24,7 +24,7 @@ const ProductActions = ({ productVariantId }: ProductActionsProps) => {
 
   return (
     <>
-      <div className="px-5">
+      <div className="mb-4 lg:mb-6">
         <div className="space-y-4">
           <h3 className="font-medium">Quantidade</h3>
           <div className="flex w-[100px] items-center justify-between rounded-lg border">
@@ -41,14 +41,21 @@ const ProductActions = ({ productVariantId }: ProductActionsProps) => {
         </div>
       </div>
 
-      <div className="flex flex-col space-y-4 px-5">
-        <AddToCartButton
-          productVariantId={productVariantId}
-          quantity={quantity}
-        />
-        <Button className="rounded-full" size="lg">
-          Comprar agora
-        </Button>
+      <div className="flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4">
+        {/* Wrapper do AddToCartButton */}
+        <div className="w-full">
+          <AddToCartButton
+            productVariantId={productVariantId}
+            quantity={quantity}
+          />
+        </div>
+
+        {/* Wrapper do Button */}
+        <div className="w-full">
+          <Button className="w-full rounded-full" size="lg">
+            Comprar agora
+          </Button>
+        </div>
       </div>
     </>
   );

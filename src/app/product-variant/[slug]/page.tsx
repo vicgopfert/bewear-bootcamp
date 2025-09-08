@@ -46,54 +46,100 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
   return (
     <>
       <Header />
-      <div className="flex flex-col space-y-6">
-        {/* Imagem */}
-        {imageUrl && (
-          <Image
-            src={imageUrl}
-            alt={productVariant.name}
-            sizes="100vw"
-            height={0}
-            width={0}
-            className="h-auto w-full rounded-3xl"
-          />
-        )}
 
-        <div className="px-5">
-          <VariantSelector
-            selectedVariant={productVariant.slug}
-            variants={productVariant.product.variants}
-          />
+      <div className="flex flex-col space-y-6 lg:flex-row lg:gap-10 lg:px-72 lg:py-10">
+        <div className="flex flex-col items-center lg:w-1/2">
+          <div className="flex w-full flex-col lg:flex-row lg:gap-4">
+            {/* Thumbnails */}
+            <div className="hidden md:flex lg:w-24 lg:flex-col lg:justify-start lg:gap-3">
+              {imageUrl && (
+                <>
+                  <Image
+                    src={imageUrl}
+                    alt="Thumb 1"
+                    width={80}
+                    height={80}
+                    className="cursor-pointer rounded-lg"
+                  />
+                  <Image
+                    src={imageUrl}
+                    alt="Thumb 2"
+                    width={80}
+                    height={80}
+                    className="cursor-pointer rounded-lg"
+                  />
+                </>
+              )}
+            </div>
+
+            {/* Imagem Principal */}
+            <div className="min-w-0 flex-1">
+              {imageUrl && (
+                <Image
+                  src={imageUrl}
+                  alt={productVariant.name}
+                  sizes="(min-width:1024px) 600px, 100vw"
+                  width={600}
+                  height={600}
+                  className="h-auto w-full rounded-2xl object-cover"
+                />
+              )}
+            </div>
+          </div>
         </div>
 
-        <div className="px-5">
+        {/* Coluna Direita - Infos do Produto */}
+        <div className="flex flex-col space-y-6 px-5 lg:mt-0 lg:w-1/2">
+          {/* Variantes (visível só em mobile/tablet) */}
+          <div className="lg:hidden">
+            <VariantSelector
+              selectedVariant={productVariant.slug}
+              variants={productVariant.product.variants}
+            />
+          </div>
+
+          {/* Nome, categoria e preço */}
+          <div>
+            <h2 className="text-lg font-semibold lg:text-3xl">
+              {productVariant.product.name}
+            </h2>
+
+            <h3 className="text-muted-foreground text-sm lg:text-lg">
+              {productVariant.name}
+            </h3>
+
+            <h3 className="mt-4 text-lg font-semibold lg:text-2xl">
+              {formatCentsToBRL(productVariant.priceInCents)}
+            </h3>
+          </div>
+
+          {/* Variantes (visível só em desktop) */}
+          <div className="hidden lg:block">
+            <VariantSelector
+              selectedVariant={productVariant.slug}
+              variants={productVariant.product.variants}
+            />
+          </div>
+
+          {/* Ações */}
+          <div className="flex flex-col gap-3">
+            <ProductActions productVariantId={productVariant.id} />
+          </div>
+
           {/* Descrição */}
-
-          <h2 className="text-lg font-semibold">
-            {productVariant.product.name}
-          </h2>
-
-          <h3 className="text-muted-foreground text-sm">
-            {productVariant.name}
-          </h3>
-
-          <h3 className="text-lg font-semibold">
-            {formatCentsToBRL(productVariant.priceInCents)}
-          </h3>
+          <div>
+            <p className="text-base leading-relaxed text-shadow-amber-600 lg:text-lg">
+              {productVariant.product.description}
+            </p>
+          </div>
         </div>
-
-        <ProductActions productVariantId={productVariant.id} />
-
-        <div className="px-5">
-          <p className="text-shadow-amber-600">
-            {productVariant.product.description}
-          </p>
-        </div>
-
-        <ProductList title="Talvez você goste" products={likelyProducts} />
-
-        <Footer />
       </div>
+
+      <div className="mt-10">
+        <ProductList title="Talvez você goste" products={likelyProducts} />
+      </div>
+
+      <Footer />
     </>
   );
 };
