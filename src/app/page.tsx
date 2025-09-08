@@ -24,13 +24,24 @@ const Home = async () => {
 
       <div className="space-y-6">
         <div className="px-5">
+          {/* Mobile */}
           <Image
             src="/banners/banner-01.png"
             alt="Leve uma vida com estilo"
             width={0}
             height={0}
             sizes="100vw"
-            className="h-auto w-full"
+            className="block h-auto w-full lg:hidden"
+          />
+
+          {/* Desktop */}
+          <Image
+            src="/banners/banner-01-desktop.png"
+            alt="Leve uma vida com estilo"
+            width={0}
+            height={0}
+            sizes="100vw"
+            className="mx-auto hidden h-auto w-full max-w-[1150px] lg:block"
           />
         </div>
 
